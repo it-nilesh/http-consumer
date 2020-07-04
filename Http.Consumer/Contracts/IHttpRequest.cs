@@ -5,7 +5,7 @@ namespace Http.Consumer.Contracts
 {
     using Http.Consumer.RequestContent;
 
-    public interface IHttpRequest
+    public interface IHttpRequest 
     {
         IHttpConsumerBuilder<TResult> Get<TResult>(Action<HttpRequestQueryString> queryString = null);
 

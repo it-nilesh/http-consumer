@@ -8,8 +8,6 @@ namespace Http.Consumer
 
     public class HttpConsumer : Authenticate, IHttpConsumer
     {
-        public Action<LocalIPEndPoint> IpEndPoint { get; private set; }
-
         public Uri Uri { get; private set; }
 
         public HttpConsumer()
@@ -19,10 +17,22 @@ namespace Http.Consumer
         }
 
         internal ConcurrentBag<IHttpConsumerExecute> HttpExecute { get; }
+        internal ConcurrentBag<ISerializer> Serializers { get; private set; } = new ConcurrentBag<ISerializer>();
+        internal ConcurrentBag<IDeserializer> Deserializers { get; private set; } = new ConcurrentBag<IDeserializer>();
 
-        internal IHttpConsumer SetWebRequest(IHttpConsumerExecute consumerExecute)
+        internal IHttpConsumer AddHttpRequest(IHttpConsumerExecute consumerExecute)
         {
             HttpExecute.Add(consumerExecute);
+            return this;
+        }
+
+        internal IHttpConsumer ClearHttpRequest()
+        {
+            while (!HttpExecute.IsEmpty)
+            {
+                HttpExecute.TryTake(out IHttpConsumerExecute _);
+            }
+
             return this;
         }
 
@@ -31,17 +41,11 @@ namespace Http.Consumer
             Uri = new Uri(host);
         }
 
-        public IHttpConsumer Host(string host, Action<LocalIPEndPoint> ipEndPoint)
-        {
-            Uri = new Uri(host);
-            IpEndPoint = ipEndPoint;
-
-            return this;
-        }
-
         public IHttpConsumer Host(string host)
         {
-            return Host(host, null);
+            Uri = new Uri(host);
+            
+            return this;
         }
 
         public IHttpRequest Resource(string resource)
@@ -52,11 +56,29 @@ namespace Http.Consumer
         public IHttpRequest Resource(string resource, Action<HttpHeader> httpHeaderOptions)
         {
             var request = HttpWebRequestFactory.Create(new Uri(Uri, resource));
-            request.BindIPEndPoint(IpEndPoint);
             var httpHeader = new HttpHeader(request, this);
             httpHeaderOptions?.Invoke(httpHeader);
-
             return new HttpRequest(request, this);
+        }
+       
+        public IHttpConsumer AddSerializer(params ISerializer[] serializers)
+        {
+            foreach (ISerializer serializer in serializers)
+            {
+                Serializers.Add(serializer);
+            }
+
+            return this;
+        }
+
+        public IHttpConsumer AddDeserializer(params IDeserializer[] deserializers)
+        {
+            foreach (IDeserializer deserializer in deserializers)
+            {
+                Deserializers.Add(deserializer);
+            }
+
+            return this;
         }
     }
 }

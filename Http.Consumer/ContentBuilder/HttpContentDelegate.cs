@@ -1,4 +1,5 @@
-﻿using Http.Consumer.RequestContent;
+﻿using Http.Consumer.Contracts;
+using Http.Consumer.RequestContent;
 using System;
 using System.IO;
 using System.Net;
@@ -6,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace Http.Consumer
 {
-    public abstract class HttpContentDelegate: IDisposable 
+    public abstract class HttpContentDelegate : IDisposable
     {
-        protected readonly HttpWebRequest _httpWebRequest;
+        protected HttpWebRequest HttpWebRequest { get; }
 
         protected HttpContentDelegate(HttpWebRequest httpWebRequest)
         {
-            _httpWebRequest = httpWebRequest;
+            HttpWebRequest = httpWebRequest;
         }
-        
+
         public virtual Task<HttpWebRequest> ExecuteAsync(HttpRequestContent<object> payload)
         {
             throw new System.NotImplementedException();
@@ -22,15 +23,15 @@ namespace Http.Consumer
 
         public virtual async Task<HttpWebResponse> ExecuteAsync()
         {
-            return (await _httpWebRequest.GetResponseAsync()) as HttpWebResponse;
+            return (await HttpWebRequest.GetResponseAsync()) as HttpWebResponse;
         }
 
-        public virtual Task<TResult> ExecuteAsync<TResult>()
+        public virtual Task<IHttpResponse<TResult>> ExecuteAsync<TResult>()
         {
             throw new System.NotImplementedException();
         }
-     
-        public virtual Task<Stream> ReceiveFileAsync()
+
+        public virtual Task<IHttpResponse<Stream>> ReceiveFileAsync()
         {
             throw new System.NotImplementedException();
         }
@@ -54,7 +55,7 @@ namespace Http.Consumer
 
             if (disposing)
             {
-                _httpWebRequest.Headers.Clear();
+                HttpWebRequest.Headers.Clear();
                 // Dispose managed state (managed objects).
                 // _httpWebRequest?.Abort();
             }

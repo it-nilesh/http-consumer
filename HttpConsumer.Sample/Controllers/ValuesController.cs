@@ -14,9 +14,9 @@ namespace HttpConsumer.Sample.Controllers
     {
         // GET api/values
         [HttpGet("v")]
-        public List<User> Get(string name, string lastName)
+        public User Get()
         {
-            return new List<User> { new User { Name1 = "value1" }, new User { Name = new string[] { "value1", "value2" } } };
+            return  new User { Name1 = "V_value1" };
         }
 
         [HttpGet("v/down/{id}")]
@@ -27,7 +27,7 @@ namespace HttpConsumer.Sample.Controllers
         }
 
         [HttpGet("d")]
-        public List<User> GetD()
+        public User GetD()
         {
             //Dictionary<string, object> va = new Dictionary<string, object>();
             //va.Add("Name", new string[] { "Nil1", "Nil" });
@@ -36,7 +36,7 @@ namespace HttpConsumer.Sample.Controllers
             //va.Add("Name3", 10.2);
             //va.Add("Name4", DateTime.Now);
 
-            return new List<User> { new User { Name1 = "value1" }};
+            return new User { Name1 = "D_value1" };
         }
 
         // GET api/values/5
@@ -50,7 +50,7 @@ namespace HttpConsumer.Sample.Controllers
         [HttpPost("v")]
         public IActionResult Post1(FileStream fileStream)
         {
-           var s = System.IO.File.Create("hh1.txt");
+            var s = System.IO.File.Create("hh1.txt");
             fileStream.CopyTo(s);
             s.Flush();
             s.Dispose();
@@ -62,12 +62,13 @@ namespace HttpConsumer.Sample.Controllers
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody] User value, IFormFile file, string name, string lastname)
+        public IActionResult Post([FromBody] User value)
         {
+            // throw new Exception("Manual Ex");
             //,  IFormFile file
             //var filrname = HttpContext.Request.Form.Files[0].FileName;
             //var name = HttpContext.Request.Form.Files[0].Name;
-            return Ok(new User { Name1 = "value1" });
+            return BadRequest(new User { Name1 = "value1" });
         }
 
         // PUT api/values/5

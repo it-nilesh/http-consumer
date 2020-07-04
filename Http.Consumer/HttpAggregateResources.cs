@@ -1,5 +1,4 @@
-﻿
-namespace Http.Consumer
+﻿namespace Http.Consumer
 {
     using Http.Consumer.Contracts;
     using System;
@@ -7,15 +6,14 @@ namespace Http.Consumer
     public class HttpAggregateResources : IHttpAggregateResources
     {
         private readonly IHttpConsumer _httpConsumer;
-
         public HttpAggregateResources(IHttpConsumer httpConsumer)
         {
             _httpConsumer = httpConsumer;
         }
 
-        public IHttpConsumerBuilder<TAggregate> Aggregate<TAggregate>(Action<HttpAggregateResult, TAggregate> result) where TAggregate : new()
+        public IHttpConsumerBuilder<TAggregate> Aggregate<TAggregate>(Action<HttpAggregateResult<TAggregate>, TAggregate> result) where TAggregate : new()
         {
-            TAggregate resultFunc(HttpAggregateResult @obj)
+            TAggregate resultFunc(HttpAggregateResult<TAggregate> @obj)
             {
                 TAggregate aggregate = new TAggregate();
                 result(@obj, aggregate);

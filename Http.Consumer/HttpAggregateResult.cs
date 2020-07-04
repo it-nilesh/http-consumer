@@ -5,43 +5,75 @@ using System.Reflection;
 
 namespace Http.Consumer
 {
-    public class HttpAggregateResult
+    public class HttpAggregateResult : IDisposable
     {
-        private readonly List<object> _response;
-
+        public List<object> Response { get; }
         public HttpAggregateResult() : this(new List<object>()) { }
 
         public HttpAggregateResult(List<object> response)
         {
-            _response = response;
+            Response = response;
         }
 
         internal void AddResponse(object @obj)
         {
-            _response.Add(obj);
+            Response.Add(obj);
         }
 
-        public HttpAggregateResult<T, R> Get<T, R>(int index, R @obj)
+        public void Dispose()
         {
-            return new HttpAggregateResult<T, R>(_response, (T)_response[index], obj);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool _disposed = false;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                Response?.Clear();
+            }
+            
+            _disposed = true;
         }
     }
 
-    public class HttpAggregateResult<T, R> : HttpAggregateResult
+    public class HttpAggregateResult<TResult> : HttpAggregateResult
     {
-        private readonly T _valueT;
-        private readonly R _valueR;
-
-        public HttpAggregateResult(List<object> response, T valueT, R valueR) : base(response)
+        public HttpAggregateResult() : base()
         {
-            _valueT = valueT;
-            _valueR = valueR;
         }
 
-        public HttpAggregateResult<T, R> Bind<TProperty>(Expression<Func<T, TProperty>> expressionT,
-                                                    Expression<Func<R, TProperty>> expressionR)
+        public HttpAggregateResult(List<object> response) : base(response)
         {
-            if (_valueT == null || _valueR == null)
+        }
+
+        public HttpAggregateResult<TInput, TResult> Get<TInput>(int index, TResult @obj)
+        {
+            return new HttpAggregateResult<TInput, TResult>(Response, (TInput)Response[index], obj);
+        }
+    }
+
+    public class HttpAggregateResult<TInput, TOutput> : HttpAggregateResult<TOutput>
+    {
+        private readonly TInput  _input;
+        private readonly TOutput _output;
+
+        public HttpAggregateResult(List<object> response, TInput input, TOutput output) : base(response)
+        {
+            _input = input;
+            _output = output;
+        }
+
+        public HttpAggregateResult<TInput, TOutput> Bind<TProperty>(Expression<Func<TInput, TProperty>> expressionT,
+                                                    Expression<Func<TOutput, TProperty>> expressionR)
+        {
+            if (_input == null || _output == null)
                 return this;
 
             if (expressionR.Body is MemberExpression memberExpression)
@@ -49,8 +81,8 @@ namespace Http.Consumer
                 var property = memberExpression.Member as PropertyInfo;
                 if (property != null)
                 {
-                    TProperty valueT = expressionT.Compile()(_valueT);
-                    property.SetValue(_valueR, valueT, null);
+                    TProperty inputValue  = expressionT.Compile()(_input);
+                    property.SetValue(_output, inputValue, null);
                 }
             }
 

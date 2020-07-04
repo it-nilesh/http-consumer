@@ -11,7 +11,7 @@ namespace Http.Consumer
 
     public class HttpRequest : HttpRequestBase, IHttpRequest
     {
-        public HttpRequest(HttpWebRequest httpWebRequest, IHttpConsumer httpConsumer) :
+        public HttpRequest(HttpWebRequest httpWebRequest, HttpConsumer httpConsumer) :
             base(httpWebRequest, httpConsumer)
         { }
 
@@ -65,7 +65,7 @@ namespace Http.Consumer
 
         public IHttpConsumerBuilder<Stream> DownloadFile(object url, Action<HttpRequestQueryString> queryString = null)
         {
-            async Task<Stream> requestFunc()
+            async Task<IHttpResponse<Stream>> requestFunc()
             {
                 HttpWebRequest.AllowReadStreamBuffering = false;
                 PreRequestConfiguration(HttpMethod.Get, url, queryString);

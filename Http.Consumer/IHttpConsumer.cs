@@ -12,6 +12,8 @@ namespace Http.Consumer
 
         IHttpConsumer Host(string host);
 
-        IHttpConsumer Host(string host, Action<LocalIPEndPoint> ipEndPoint);
+        IHttpConsumer AddSerializer(params ISerializer[] serializers);
+
+        IHttpConsumer AddDeserializer(params IDeserializer[] deserializers);
     }
 }

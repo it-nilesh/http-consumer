@@ -21,15 +21,15 @@ namespace Http.Consumer
             return this;
         }
 
-        public HttpHeader SetContentType(string contentType= ContentType.Json)
+        public HttpHeader SetContentType(string contentType = ContentType.Json)
         {
             _httpWebRequest.ContentType = contentType;
             return this;
         }
 
-        public HttpHeader AddHeader(string key, string value)
+        public HttpHeader AddHeader(string name, string value)
         {
-            _httpWebRequest.Headers.Add(key, value);
+            _httpWebRequest.Headers.Add(name, value);
             return this;
         }
 

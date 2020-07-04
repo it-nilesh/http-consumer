@@ -9,10 +9,10 @@ namespace Http.Consumer
 
     public class HttpRequestBase
     {
-        public HttpRequestBase(HttpWebRequest httpWebRequest, IHttpConsumer httpConsumer)
+        public HttpRequestBase(HttpWebRequest httpWebRequest, HttpConsumer httpConsumer)
         {
             HttpWebRequest = httpWebRequest;
-            HttpContent = new HttpContentBuilder(httpWebRequest);
+            HttpContent = new HttpContentBuilder(httpWebRequest, httpConsumer.Serializers, httpConsumer.Deserializers);
             HttpConsumer = httpConsumer;
             ResourceUri = httpWebRequest.RequestUri;
         }
@@ -32,7 +32,7 @@ namespace Http.Consumer
             return new HttpConsumerBuilder<object>(() => TransferDataBuilderResult<object>(payload, contentOptions), HttpConsumer);
         }
 
-        protected virtual async Task<TResult> TransferDataBuilderResult<TResult>(object payload, Action<HttpRequestContent<object>> contentOptions)
+        protected virtual async Task<IHttpResponse<TResult>> TransferDataBuilderResult<TResult>(object payload, Action<HttpRequestContent<object>> contentOptions)
         {
             var requestContent = new HttpRequestContent<object>(payload);
             contentOptions?.Invoke(requestContent);
@@ -41,7 +41,7 @@ namespace Http.Consumer
 
         protected virtual IHttpConsumerBuilder<TResult> RetriveDataBuilder<TResult>()
         {
-            async Task<TResult> requestFunc()
+            async Task<IHttpResponse<TResult>> requestFunc()
             {
                 return await HttpContent.HttpResponseAsync<TResult>();
             }

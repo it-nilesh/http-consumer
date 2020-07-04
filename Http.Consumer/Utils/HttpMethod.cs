@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Http.Consumer.Utils
+﻿namespace Http.Consumer.Utils
 {
     internal static class HttpMethod 
     {

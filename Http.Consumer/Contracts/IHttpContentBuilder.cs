@@ -8,9 +8,9 @@ namespace Http.Consumer.Contracts
 {
     public interface IHttpContentBuilder
     {
-        Task<TResult> HttpResponseAsync<TResult>();
-        Task<TResult> HttpResponseAsync<TResult>(HttpRequestContent<object> payload);
-        Task<Stream> ReceiveFileAsync();
+        Task<IHttpResponse<TResult>> HttpResponseAsync<TResult>();
+        Task<IHttpResponse<TResult>> HttpResponseAsync<TResult>(HttpRequestContent<object> payload);
+        Task<IHttpResponse<Stream>> ReceiveFileAsync();
         Task<HttpWebResponse> ExecuteAsync(HttpRequestContent<object> payload);
     }
 }
