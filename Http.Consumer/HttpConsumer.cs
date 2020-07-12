@@ -17,7 +17,9 @@ namespace Http.Consumer
         }
 
         internal ConcurrentBag<IHttpConsumerExecute> HttpExecute { get; }
+      
         internal ConcurrentBag<ISerializer> Serializers { get; private set; } = new ConcurrentBag<ISerializer>();
+        
         internal ConcurrentBag<IDeserializer> Deserializers { get; private set; } = new ConcurrentBag<IDeserializer>();
 
         internal IHttpConsumer AddHttpRequest(IHttpConsumerExecute consumerExecute)

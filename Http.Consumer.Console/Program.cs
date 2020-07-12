@@ -11,13 +11,6 @@
     {
         static void Main(string[] args)
         {
-            //Delegate 
-            //https://github.com/microsoft/referencesource/blob/aaca53b025f41ab638466b1efe569df314f689ea/System/net/System/Net/Http/HttpClientHandler.cs
-            //new HttpResponseMessage()
-            //DelegatingHandler
-            //new HttpRequestMessage()
-            //new HttpContent()
-
             IHttpConsumer httpConsumer = new HttpConsumer();
             var val = httpConsumer
                     .Host("http://localhost:1977/api/")
@@ -25,7 +18,7 @@
                     // .AddSerializer(new NewtoneJsonSerialize())
                     .Resource("values/v/", x => x.SetContentType(ContentType.Json))
                     .Get<User>()
-                    .Next("values/d/", x => x.SetContentType(ContentType.Json))
+                    .Next("values/d/")
                     .Get<User>()
                     .Aggregate<AgUser>((x, y) =>
                     {

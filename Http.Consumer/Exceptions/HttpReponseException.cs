@@ -7,8 +7,6 @@ namespace Http.Consumer.Exceptions
 {
     public class HttpReponseException : Exception
     {
-
-
         public HttpReponseException()
         {
         }

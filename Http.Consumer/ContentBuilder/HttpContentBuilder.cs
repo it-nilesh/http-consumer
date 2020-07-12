@@ -28,8 +28,7 @@ namespace Http.Consumer.RequestContent
         {
             return _httpResponse.ReceiveFileAsync();
         }
-
-
+        
         public async Task<HttpWebResponse> ExecuteAsync(HttpRequestContent<object> payload)
         {
             await _httpRequest.ExecuteAsync(payload);

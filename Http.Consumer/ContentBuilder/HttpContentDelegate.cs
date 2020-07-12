@@ -38,9 +38,7 @@ namespace Http.Consumer
 
         public void Dispose()
         {
-            // Dispose of unmanaged resources.
             Dispose(true);
-            // Suppress finalization.
             GC.SuppressFinalize(this);
         }
 
@@ -55,8 +53,7 @@ namespace Http.Consumer
 
             if (disposing)
             {
-                HttpWebRequest.Headers.Clear();
-                // Dispose managed state (managed objects).
+                HttpWebRequest.Headers.Clear();                
                 // _httpWebRequest?.Abort();
             }
 

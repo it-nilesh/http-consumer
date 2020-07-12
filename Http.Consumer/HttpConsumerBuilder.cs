@@ -58,27 +58,27 @@ namespace Http.Consumer
             return httpReponse.Content;
         }
 
-        public async Task<T> BuildAsync(Action<HttpReponseException> ex = null)
+        public async Task<T> BuildAsync(Action<HttpReponseException> exceptionOptions = null)
         {
-            return (await RequestBuildAsync(ex)).Content;
+            return (await RequestBuildAsync(exceptionOptions)).Content;
         }
 
-        async Task IHttpConsumerBuilder.BuildAsync(Action<HttpReponseException> ex = null)
+        async Task IHttpConsumerBuilder.BuildAsync(Action<HttpReponseException> exceptionOptions = null)
         {
-            await BuildAsync(ex);
+            await BuildAsync(exceptionOptions);
         }
 
-        public async Task<IHttpResponse<T>> BuildWithHeaderAsync(Action<HttpReponseException> ex = null)
+        public async Task<IHttpResponse<T>> BuildWithHeaderAsync(Action<HttpReponseException> exceptionOptions = null)
         {
-            return await RequestBuildAsync(ex);
+            return await RequestBuildAsync(exceptionOptions);
         }
 
-        async Task<IHttpResponse> IHttpConsumerBuilder.BuildWithHeaderAsync(Action<HttpReponseException> ex = null)
+        async Task<IHttpResponse> IHttpConsumerBuilder.BuildWithHeaderAsync(Action<HttpReponseException> exceptionOptions = null)
         {
-            return await BuildWithHeaderAsync(ex);
+            return await BuildWithHeaderAsync(exceptionOptions);
         }
 
-        private async Task<IHttpResponse<T>> RequestBuildAsync(Action<HttpReponseException> ex)
+        private async Task<IHttpResponse<T>> RequestBuildAsync(Action<HttpReponseException> exceptionOptions)
         {
             IHttpResponse<T> content = default;
             try
@@ -106,18 +106,18 @@ namespace Http.Consumer
             catch (WebException exception)
             {
                 //TODO: Implement circute breaker 
-                if (!(ex is null))
+                if (!(exceptionOptions is null))
                 {
                     var responseException = new HttpReponseException(exception.Message, exception);
                     responseException.SetResponse(exception);
-                    ex(responseException);
-                }
+                    exceptionOptions(responseException);
+                }             
             }
             catch (Exception exception)
             {
-                if (!(ex is null))
+                if (!(exceptionOptions is null))
                 {
-                    ex(new HttpReponseException(exception.Message, exception));
+                    exceptionOptions(new HttpReponseException(exception.Message, exception));
                 }
                 else
                 {
