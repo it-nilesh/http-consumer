@@ -6,6 +6,8 @@ namespace Http.Consumer
     
     public interface IHttpConsumer : IAuthenticate
     {
+        Uri Uri { get; }
+
         IHttpRequest Resource(string resource);
 
         IHttpRequest Resource(string resource, Action<HttpHeader> httpHeaderOptions);

@@ -13,23 +13,33 @@
         {
             IHttpConsumer httpConsumer = new HttpConsumer();
             var val = httpConsumer
-                    .Host("http://localhost:1977/api/")
+                    .Host("http://localhost:1977/api/")                   
                     .AddDeserializer(new NewtoneJsonSerialize())
                     // .AddSerializer(new NewtoneJsonSerialize())
-                    .Resource("values/v/", x => x.SetContentType(ContentType.Json))
+                    .Resource("BasicAuth/", x => x.SetContentType(ContentType.Json))
                     .Get<User>()
-                    .Next("values/d/")
-                    .Get<User>()
-                    .Aggregate<AgUser>((x, y) =>
-                    {
-                        x.Get<User>(0, y)
-                         .Bind(x => x.Name1, z => z.Name1)
-                         .Get<User>(1, y)
-                         .Bind(x => x.Name1, z => z.Name);
-                    })
                     .BuildAsync()
                     .GetAwaiter()
                     .GetResult();
+
+            //var val = httpConsumer
+            //        .Host("http://localhost:1977/api/")
+            //        .AddDeserializer(new NewtoneJsonSerialize())
+            //        // .AddSerializer(new NewtoneJsonSerialize())
+            //        .Resource("values/v/", x => x.SetContentType(ContentType.Json))
+            //        .Get<User>()
+            //        .Next("values/d/")
+            //        .Get<User>()
+            //        .Aggregate<AgUser>((x, y) =>
+            //        {
+            //            x.Get<User>(0, y)
+            //             .Bind(x => x.Name1, z => z.Name1)
+            //             .Get<User>(1, y)
+            //             .Bind(x => x.Name1, z => z.Name);
+            //        })
+            //        .BuildAsync()
+            //        .GetAwaiter()
+            //        .GetResult();
 
             Console.WriteLine($"Hello World!");
         }

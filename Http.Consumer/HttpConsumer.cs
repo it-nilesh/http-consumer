@@ -13,7 +13,6 @@ namespace Http.Consumer
         public HttpConsumer()
         {
             HttpExecute = new ConcurrentBag<IHttpConsumerExecute>();
-            base.HttpConsumer = this;
         }
 
         internal ConcurrentBag<IHttpConsumerExecute> HttpExecute { get; }

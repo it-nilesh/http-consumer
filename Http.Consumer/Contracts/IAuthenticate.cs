@@ -1,11 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Http.Consumer.Contracts
 {
     public interface IAuthenticate
     {
-        IHttpConsumer BasicAuthenticate(string userName, string password, string domain = null, bool preAuthenticate = false);
+        IHttpConsumer NetworkCredential(ICredentials networkCredential, bool preAuthenticate = false);
+
+        IHttpConsumer BasicAuthenticate(string userName, string password);
+
         IHttpConsumer BearerAuthenticate(string token);
-        Dictionary<string, string> Auth { get; }
+
+        IHttpConsumer AddX509Certificate(Action<X509CertificateCollection> x509Certificates);
+
+      //  Dictionary<string, string> Auth { get; }
     }
 }

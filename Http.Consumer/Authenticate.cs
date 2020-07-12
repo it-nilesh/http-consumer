@@ -6,29 +6,33 @@ using System.Security.Cryptography.X509Certificates;
 namespace Http.Consumer
 {
     using Http.Consumer.Contracts;
+    using System.Text;
 
     public abstract class Authenticate : IAuthenticate
     {
-        protected internal IHttpConsumer HttpConsumer { get; internal set; }
 
+        internal Dictionary<string, string> Auth { get; } = new Dictionary<string, string>();
+        internal bool PreAuthenticate { get; private set; }
         internal ICredentials Credentials { get; private set; }
 
-        internal bool PreAuthenticate { get; private set; }
-
-        public IHttpConsumer BasicAuthenticate(string userName, string password, string domain = null, bool preAuthenticate = false)
+        public IHttpConsumer BasicAuthenticate(string userName, string password)
         {
-            if (string.IsNullOrWhiteSpace(domain))
-                Credentials = new NetworkCredential(userName, password);
-            else
-                Credentials = new NetworkCredential(userName, password, domain);
+            Auth.Clear();
 
-            PreAuthenticate = preAuthenticate;
+            var token = Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(userName + ":" + password));
+            Auth[HttpRequestHeader.Authorization.ToString()] = $"Basic {token}";
 
-            return HttpConsumer;
+            return (IHttpConsumer)this;
         }
 
-        public Dictionary<string, string> Auth { get; } = new Dictionary<string, string>();
+        public IHttpConsumer NetworkCredential(ICredentials credentials, bool preAuthenticate = false)
+        {
+            Credentials = credentials;
+            PreAuthenticate = preAuthenticate;
 
+            return (IHttpConsumer)this;
+        }
+     
         public IHttpConsumer BearerAuthenticate(string token)
         {
             Auth.Clear();
@@ -38,12 +42,13 @@ namespace Http.Consumer
                 token = $"bearer {token}";
             }
 
-            Auth.Add(HttpRequestHeader.Authorization.ToString(), token);
-            return HttpConsumer;
+            Auth[HttpRequestHeader.Authorization.ToString()] = token;
+
+            return (IHttpConsumer)this;
         }
-
-
+      
         public X509CertificateCollection CertificateCollection { get; protected set; }
+       
         public IHttpConsumer AddX509Certificate(Action<X509CertificateCollection> x509Certificates)
         {
             if (x509Certificates != null)
@@ -52,7 +57,7 @@ namespace Http.Consumer
                 x509Certificates(CertificateCollection);
             }
 
-            return HttpConsumer;
+            return (IHttpConsumer)this;
         }
     }
 }
